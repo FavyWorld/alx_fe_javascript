@@ -429,7 +429,7 @@ if (typeof quotes === 'undefined') {
   }
   
   // Load quotes from local storage
-  function loadQuotes() {
+function loadQuotes() {
     const storedQuotes = localStorage.getItem('quotes');
     if (storedQuotes) {
       quotes = JSON.parse(storedQuotes);
@@ -533,6 +533,30 @@ if (typeof quotes === 'undefined') {
       }
     } catch (error) {
       console.error('Error fetching quotes from server:', error);
+    }
+  }
+  
+  // Sync quotes and handle conflicts
+  async function syncQuotes() {
+    try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+      const serverQuotes = await response.json();
+      if (Array.isArray(serverQuotes)) {
+        const mergedQuotes = [...serverQuotes];
+        quotes.forEach(localQuote => {
+          if (!serverQuotes.some(serverQuote => serverQuote.text === localQuote.text && serverQuote.category === localQuote.category)) {
+            mergedQuotes.push(localQuote);
+          }
+        });
+        quotes = mergedQuotes;
+        saveQuotes();
+        populateCategories();
+        filterQuotes();
+      } else {
+        console.error('Invalid data format from server');
+      }
+    } catch (error) {
+      console.error('Error syncing quotes:', error);
     }
   }
   

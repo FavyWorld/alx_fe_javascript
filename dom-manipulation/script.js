@@ -428,7 +428,7 @@ if (typeof quotes === 'undefined') {
     var quote = [];
   }
   
-  // Load quotes from local storage
+ // Load quotes from local storage
 function loadQuotes() {
     const storedQuotes = localStorage.getItem('quotes');
     if (storedQuotes) {
@@ -568,6 +568,9 @@ function loadQuotes() {
     document.getElementById('categoryFilter').value = savedCategory;
     filterQuotes();
     fetchQuotesFromServer(); // Fetch quotes from server on page load
+  
+    // Periodically sync with server
+    setInterval(syncQuotes, 60000); // Sync every 60 seconds
   });
   
   // JSON Import Function

@@ -284,7 +284,7 @@ if (typeof quotes === 'undefined') {
 
 // Check if the quotes array is already defined
 if (typeof quotes === 'undefined') {
-  var quote = [];
+  var quotes = [];
 }
 
 // Load quotes from local storage
@@ -418,18 +418,13 @@ function exportToJsonFile() {
 
 
 
-
-
-
-
-
 // Check if the quotes array is already defined
 if (typeof quotes === 'undefined') {
-    var quote = [];
+    var quotes = [];
   }
   
- // Load quotes from local storage
-function loadQuotes() {
+  // Load quotes from local storage
+  function loadQuotes() {
     const storedQuotes = localStorage.getItem('quotes');
     if (storedQuotes) {
       quotes = JSON.parse(storedQuotes);
@@ -513,6 +508,7 @@ function loadQuotes() {
       });
       const data = await response.json();
       console.log('Quotes synced with server:', data);
+      alert('Quotes synced with server!');
     } catch (error) {
       console.error('Error syncing with server:', error);
     }
@@ -552,6 +548,7 @@ function loadQuotes() {
         saveQuotes();
         populateCategories();
         filterQuotes();
+        alert('Quotes synced with server!');
       } else {
         console.error('Invalid data format from server');
       }
@@ -598,3 +595,15 @@ function loadQuotes() {
     a.click();
     URL.revokeObjectURL(url);
   }
+
+
+
+
+
+
+
+
+
+
+
+

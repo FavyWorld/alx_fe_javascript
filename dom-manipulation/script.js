@@ -70,6 +70,11 @@ showRandomQuote();
 createAddQuoteForm();
 
 
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const quoteDisplay = document.getElementById('quoteDisplay');
     const newQuoteButton = document.getElementById('newQuote');
@@ -121,8 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function exportToJsonFile() {
         const dataStr = JSON.stringify(quotes);
-        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const dataUri = URL.createObjectURL(blob);
         const exportFileDefaultName = 'quotes.json';
+
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);

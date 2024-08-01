@@ -69,14 +69,88 @@ showRandomQuote();
 // Create the Add Quote form on page load
 createAddQuoteForm();
 
-<input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
-  function importFromJsonFile(event) {
-    const fileReader = new FileReader();
-    fileReader.onload = function(event) {
-      const importedQuotes = JSON.parse(event.target.result);
-      quotes.push(...importedQuotes);
-      saveQuotes();
-      alert('Quotes imported successfully!');
-    };
-    fileReader.readAsText(event.target.files[0]);
-  }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const quoteDisplay = document.getElementById('quoteDisplay');
+    const newQuoteButton = document.getElementById('newQuote');
+    const importFileInput = document.getElementById('importFile');
+    const addQuoteButton = document.querySelector('button[onclick="addQuote()"]');
+
+    let quotes = JSON.parse(localStorage.getItem('quotes')) || [
+        { text: 'The only limit to our realization of tomorrow is our doubts of today.', category: 'Inspirational' },
+        { text: 'Life is 10% what happens to us and 90% how we react to it.', category: 'Motivational' },
+        { text: 'Do not watch the clock. Do what it does. Keep going.', category: 'Motivational' }
+    ];
+
+    function showRandomQuote() {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        const quote = quotes[randomIndex];
+        quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>Category: ${quote.category}</em></p>`;
+        sessionStorage.setItem('lastQuote', JSON.stringify(quote));
+    }
+
+    function addQuote() {
+        const newQuoteText = document.getElementById('newQuoteText').value.trim();
+        const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
+
+        if (newQuoteText && newQuoteCategory) {
+            const newQuote = { text: newQuoteText, category: newQuoteCategory };
+            quotes.push(newQuote);
+            saveQuotes();
+            showRandomQuote();
+            document.getElementById('newQuoteText').value = '';
+            document.getElementById('newQuoteCategory').value = '';
+        } else {
+            alert('Please enter both quote text and category.');
+        }
+    }
+
+    function saveQuotes() {
+        localStorage.setItem('quotes', JSON.stringify(quotes));
+    }
+
+    function createAddQuoteForm() {
+        return `
+            <div>
+                <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+                <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+                <button onclick="addQuote()">Add Quote</button>
+            </div>
+        `;
+    }
+
+    function exportToJsonFile() {
+        const dataStr = JSON.stringify(quotes);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        const exportFileDefaultName = 'quotes.json';
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    }
+
+    function importFromJsonFile(event) {
+        const fileReader = new FileReader();
+        fileReader.onload = function(event) {
+            const importedQuotes = JSON.parse(event.target.result);
+            quotes.push(...importedQuotes);
+            saveQuotes();
+            alert('Quotes imported successfully!');
+            showRandomQuote();
+        };
+        fileReader.readAsText(event.target.files[0]);
+    }
+
+    document.getElementById('importFile').addEventListener('change', importFromJsonFile);
+    document.getElementById('exportQuotes').addEventListener('click', exportToJsonFile);
+    newQuoteButton.addEventListener('click', showRandomQuote);
+
+    if (sessionStorage.getItem('lastQuote')) {
+        const lastQuote = JSON.parse(sessionStorage.getItem('lastQuote'));
+        quoteDisplay.innerHTML = `<p>${lastQuote.text}</p><p><em>Category: ${lastQuote.category}</em></p>`;
+    } else {
+        showRandomQuote();
+    }
+
+    document.body.insertAdjacentHTML('beforeend', createAddQuoteForm());
+});
